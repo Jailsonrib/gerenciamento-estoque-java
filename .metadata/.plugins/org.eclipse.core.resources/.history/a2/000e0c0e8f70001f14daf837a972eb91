@@ -1,0 +1,114 @@
+package database;
+
+import java.sql.Connection;
+import java.sql.PreparedStatement;
+import java.sql.SQLException;
+import java.sql.Statement;
+import java.sql.ResultSet;
+
+public class ProductManager {
+
+    // Método para inserir um novo produto no banco de dados com validações
+    public static void addProduct(String nome, int quantidade, int limiteMinimo, String descricao) {
+        // Validações
+        if (nome == null || nome.trim().isEmpty()) {
+            System.out.println("Erro: O nome do produto não pode ser vazio.");
+            return;
+        }
+        if (quantidade < 0) {
+            System.out.println("Erro: A quantidade do produto não pode ser negativa.");
+            return;
+        }
+        if (limiteMinimo < 0) {
+            System.out.println("Erro: O limite mínimo não pode ser negativo.");
+            return;
+        }
+
+        String sql = "INSERT INTO produtos(nome, quantidade, limite_minimo, descricao) VALUES(?,?,?,?)";
+
+        try (Connection conn = DatabaseConnection.connect();
+             PreparedStatement pstmt = conn.prepareStatement(sql)) {
+            pstmt.setString(1, nome);
+            pstmt.setInt(2, quantidade);
+            pstmt.setInt(3, limiteMinimo);
+            pstmt.setString(4, descricao);
+            pstmt.executeUpdate();
+            System.out.println("Produto inserido com sucesso.");
+        } catch (SQLException e) {
+            System.out.println("Erro ao inserir o produto: " + e.getMessage());
+        }
+    }
+
+    // Método para listar todos os produtos
+    public static void listProducts() {
+        String sql = "SELECT * FROM produtos";
+
+        try (Connection conn = DatabaseConnection.connect();
+             Statement stmt = conn.createStatement();
+             ResultSet rs = stmt.executeQuery(sql)) {
+
+            // Iterar sobre o ResultSet para mostrar os produtos
+            while (rs.next()) {
+                System.out.println(
+                        "ID: " + rs.getInt("id") +
+                        ", Nome: " + rs.getString("nome") +
+                        ", Quantidade: " + rs.getInt("quantidade") +
+                        ", Limite Mínimo: " + rs.getInt("limite_minimo") +
+                        ", Descrição: " + rs.getString("descricao"));
+            }
+        } catch (SQLException e) {
+            System.out.println("Erro ao consultar os produtos: " + e.getMessage());
+        }
+    }
+
+    // Método para atualizar a quantidade de um produto
+    public static void updateProductQuantity(int id, int novaQuantidade) {
+        String sql = "UPDATE produtos SET quantidade = ? WHERE id = ?";
+
+        try (Connection conn = DatabaseConnection.connect();
+             PreparedStatement pstmt = conn.prepareStatement(sql)) {
+            pstmt.setInt(1, novaQuantidade);
+            pstmt.setInt(2, id);
+            pstmt.executeUpdate();
+            System.out.println("Quantidade do produto atualizada com sucesso.");
+        } catch (SQLException e) {
+            System.out.println("Erro ao atualizar o produto: " + e.getMessage());
+        }
+    }
+
+    // Método para deletar um produto pelo ID
+    public static void deleteProduct(int id) {
+        String sql = "DELETE FROM produtos WHERE id = ?";
+
+        try (Connection conn = DatabaseConnection.connect();
+             PreparedStatement pstmt = conn.prepareStatement(sql)) {
+            pstmt.setInt(1, id);
+            pstmt.executeUpdate();
+            System.out.println("Produto deletado com sucesso.");
+        } catch (SQLException e) {
+            System.out.println("Erro ao deletar o produto: " + e.getMessage());
+        }
+    }
+
+    // Método para listar produtos abaixo do limite mínimo
+    public static void listProductsBelowLimit() {
+        String sql = "SELECT * FROM produtos WHERE quantidade < limite_minimo";
+
+        try (Connection conn = DatabaseConnection.connect();
+             Statement stmt = conn.createStatement();
+             ResultSet rs = stmt.executeQuery(sql)) {
+
+            // Iterar sobre o ResultSet para mostrar os produtos abaixo do limite
+            while (rs.next()) {
+                System.out.println(
+                        "ID: " + rs.getInt("id") +
+                        ", Nome: " + rs.getString("nome") +
+                        ", Quantidade: " + rs.getInt("quantidade") +
+                        ", Limite Mínimo: " + rs.getInt("limite_minimo") +
+                        ", Descrição: " + rs.getString("descricao"));
+            }
+        } catch (SQLException e) {
+            System.out.println("Erro ao consultar os produtos abaixo do limite: " + e.getMessage());
+        }
+    }
+}

@@ -1,0 +1,25 @@
+package database;
+
+import java.sql.Connection;
+import java.sql.PreparedStatement;
+import java.sql.SQLException;
+
+public class ProductManager {
+
+    // Método para inserir um novo produto no banco de dados
+    public static void addProduct(String nome, int quantidade, int limiteMinimo, String descricao) {
+        String sql = "INSERT INTO produtos(nome, quantidade, limite_minimo, descricao) VALUES(?,?,?,?)";
+
+        try (Connection conn = DatabaseConnection.connect();
+             PreparedStatement pstmt = conn.prepareStatement(sql)) {
+            pstmt.setString(1, nome);
+            pstmt.setInt(2, quantidade);
+            pstmt.setInt(3, limiteMinimo);
+            pstmt.setString(4, descricao);
+            pstmt.executeUpdate();
+            System.out.println("Produto inserido com sucesso.");
+        } catch (SQLException e) {
+            System.out.println("Erro ao inserir o produto: " + e.getMessage());
+        }
+    }
+}

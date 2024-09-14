@@ -1,0 +1,4 @@
+module GerenciamentoEstoque {
+    requires java.sql; // Necessário para usar as classes de JDBC
+    // Adicione outras dependências aqui se necessário
+}

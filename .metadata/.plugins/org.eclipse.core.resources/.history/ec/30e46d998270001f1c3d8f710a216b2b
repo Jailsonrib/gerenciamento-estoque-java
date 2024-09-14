@@ -1,0 +1,52 @@
+package database;
+
+import javafx.application.Application;
+import javafx.scene.Scene;
+import javafx.scene.control.Button;
+import javafx.scene.control.Label;
+import javafx.scene.control.TextField;
+import javafx.scene.layout.VBox;
+import javafx.stage.Stage;
+
+public class MainApp extends Application {
+
+    @Override
+    public void start(Stage primaryStage) {
+        primaryStage.setTitle("Gerenciamento de Estoque");
+
+        Label nameLabel = new Label("Nome do Produto:");
+        TextField nameField = new TextField();
+
+        Label quantityLabel = new Label("Quantidade:");
+        TextField quantityField = new TextField();
+
+        Label limitLabel = new Label("Limite Mínimo:");
+        TextField limitField = new TextField();
+
+        Label descriptionLabel = new Label("Descrição:");
+        TextField descriptionField = new TextField();
+
+        Button addButton = new Button("Adicionar Produto");
+        addButton.setOnAction(e -> {
+            // Validação e adição do produto
+            String nome = nameField.getText();
+            int quantidade = Integer.parseInt(quantityField.getText());
+            int limiteMinimo = Integer.parseInt(limitField.getText());
+            String descricao = descriptionField.getText();
+
+            ProductManager.addProduct(nome, quantidade, limiteMinimo, descricao);
+        });
+
+        VBox layout = new VBox(10);
+        layout.getChildren().addAll(nameLabel, nameField, quantityLabel, quantityField,
+                                    limitLabel, limitField, descriptionLabel, descriptionField, addButton);
+
+        Scene scene = new Scene(layout, 300, 400);
+        primaryStage.setScene(scene);
+        primaryStage.show();
+    }
+
+    public static void main(String[] args) {
+        launch(args);
+    }
+}
